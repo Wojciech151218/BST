@@ -115,10 +115,6 @@ void Tree<T>::insertAndPrint(T value) {
     });
 }
 
-template<typename T>
-void Tree<T>::emptyTree() {
-    delete root;
-}
 
 template<typename T>
 Tree<T>::~Tree() {

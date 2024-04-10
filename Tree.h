@@ -33,7 +33,6 @@ public:
     void display(Node *currentRoot = nullptr,int depth =0,std::string colour = "");
     explicit Tree(Node *root) : root(root) {};
     void insertAndPrint(T);
-    void emptyTree();
     ~Tree();
     Tree(std::vector<T>);
     void test(){
