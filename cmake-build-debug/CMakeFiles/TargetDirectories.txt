@@ -1,0 +1,3 @@
+/home/wojciech/CLionProjects/algi2/cmake-build-debug/CMakeFiles/algi2.dir
+/home/wojciech/CLionProjects/algi2/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/wojciech/CLionProjects/algi2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
