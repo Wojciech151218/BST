@@ -33,17 +33,20 @@ std::vector<int> getSortedArray(int size){
 }
 
 int main() {
-    auto tree = new Tree<int>({1,2,3,4,5,6,7});
+    auto tree = new Tree<int>({1,2,3,4,5,6});
     printf("%d\n",tree->getMaxValue());
     printf("%d\n",tree->getMinValue());
     tree->printInOrder();
     tree->printPreOrder();
-    tree->display();
-    tree->removeNodesNTimes(3,3);
-    //printf("////////////////////\n");
+    //tree->removeNodesNTimes(3,3);
 
-    //tree->DSWAlgorithm();
-    //tree->display();
+    tree->display();
+    printf("////////////////////\n");
+
+
+
+    tree->DSWAlgorithm();
+    tree->display();
 
     delete tree;//usuwanie metoda postorder
 

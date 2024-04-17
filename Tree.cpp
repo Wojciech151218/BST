@@ -160,43 +160,26 @@ typename Tree<T>::Node *Tree<T>::Node::buildBST(std::vector<int> nums, int start
 }
 
 template<typename T>
-void Tree<T>::rotateLeft(Node * parent ,Node * node ) {
-    if (node == nullptr or node->left == nullptr) return;
-    Node * A = node;
-    Node * B = node->left;
-    Node * beta = B->right;
+void Tree<T>::rotateLeft(Node*& grand) {
 
-    A->left = beta;
-    B->right = A;
-    if(parent == nullptr){
-        root = B;
-        return;
-    }
-
-    if(parent->right == A)
-        parent->right = B;
-    else
-        parent->left = B;
+    if (not grand or not grand->right) return;
+    Node* tmp = grand->right;
+    grand->right = tmp->left;
+    tmp->left = grand;
+    if(grand == root) root = tmp;
+    grand = tmp;
 }
-template <typename T>
-void Tree<T>::rotateRight(Node * parent, Node * node) {
-    if (node == nullptr or node->right == nullptr) return;
-    Node * A = node;
-    Node * B = node->right;
-    Node * beta = B->left;
+template<typename T>
+void Tree<T>::rotateRight(Node*& grand) {
 
-    A->right = beta;
-    B->left = A;
-    if(parent == nullptr){
-        root = B;
-        return;
-    }
-
-    if (parent->left == A)
-        parent->left = B;
-    else
-        parent->right = B;
+    if (not grand or not grand->left) return;
+    Node* tmp = grand->left;
+    grand->left = tmp->right;
+    tmp->right = grand;
+    if(grand == root) root = tmp;
+    grand = tmp;
 }
+
 
 template<typename T>
 void Tree<T>::updateCellInfo(TimeCounter::CellInfo cI) {
@@ -286,52 +269,80 @@ void Tree<T>::removeNodesNTimes(T key, int n) {
 }
 
 template<typename T>
-void Tree<T>::turnToRightOnlyTree() {
-    Node * previous = nullptr;
-    Node * current = root;
-    Node * pivot;
-    int i = 0;
-    while(i++<15) {//TODO działa prawie dobrze tylko ten warunek nie jest prawidłowy
+int Tree<T>::BSTToVine(Node* grand) {
+    int count = 0;
 
-        if (current->left != nullptr) {
-            rotateLeft(previous, current);
+    // Make tmp pointer to traverse 
+    // and right flatten the given BST.
+    Node* tmp = grand->right;
 
+    // Traverse until tmp becomes NULL
+    while (tmp) {
 
-            previous = nullptr;
-            current = root;
+        // If left exist for node 
+        // pointed by tmp then 
+        // right rotate it.
+        if (tmp->left) {
+            rotateRight(tmp);
+        }
 
-        } else {
-            previous = current;
-            current = current->right;
+            // If left dont exists
+            // add 1 to count and 
+            // traverse further right to
+            // flatten remaining BST.
+        else {
+            count++;
+            grand = tmp;
+            tmp = tmp->right;
         }
     }
 
+    return count;
 }
 
 template<typename T>
-void Tree<T>::daysAlgorithm() {
-    Node *current = root;
-    bool isOdd = true;
-    std::vector<Node *> nodes;
-    while (current->right != nullptr) {
-        if (isOdd)
-            nodes.push_back(current);
-        current = current->right;
-        isOdd = not isOdd;
-    }
-    rotateRight(nullptr,root);//TODO nie tak
-    for (auto &&it: nodes){
-        rotateRight(it, it->right);
+void Tree<T>::compress(Tree::Node *grand, int m) {
+    // Make tmp pointer to traverse
+    // and compress the given BST.
+    Node* tmp = root;
+
+    // Traverse and left-rotate root m times
+    // to compress given vine form of BST.
+    for (int i = 0; i < m; i++) {
+        rotateLeft(tmp);
 
     }
-
 }
 
 template<typename T>
-void Tree<T>::DSWAlgorithm() {
-    turnToRightOnlyTree();
-    daysAlgorithm();
-    daysAlgorithm();//TODO zdecydować kiedy algorytm ma być wywołany https://pl.wikipedia.org/wiki/Algorytm_DSW
+ void Tree<T>::DSWAlgorithm() {
+    // create dummy node with value 0
+    Node* grand = new Node(T(0));
+
+    // assign the right of dummy node as our input BST
+    grand->right = root;
+
+    // get the number of nodes in input BST and
+    // simultaneously convert it into right linked list.
+    int count = BSTToVine(grand);
+    // gets the height of tree in which all levels
+    // are completely filled.
+    int h = log2(count + 1);
+
+    // get number of nodes until second last level
+    int m = pow(2, h) - 1;
+
+    // Left rotate for excess nodes at last level
+    compress(grand, count - m);
 
 
+    // Left rotation till m becomes 0
+    // Step is done as mentioned in algo to
+    // make BST balanced.
+    for (m = m / 2; m > 0; m /= 2) {
+        compress(grand, m);
+
+    }
+
+    // return the balanced tree
 }

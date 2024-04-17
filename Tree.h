@@ -13,6 +13,7 @@
 #include <chrono>
 #include <utility>
 #include "library.h"
+#include <cmath>
 
 
 template <typename T>
@@ -39,11 +40,13 @@ public:
     ~Tree();
     Tree(std::vector<T>);
     void removeNodesNTimes(T key ,int n);
-    void turnToRightOnlyTree();
-    void test(){
-        rotateRight(root,root->left);
-    }
     void DSWAlgorithm();
+    void test(){
+        rotateRight(root->left->left);
+
+
+    }
+
 
 private:
     Node * root;
@@ -54,10 +57,11 @@ private:
     void traversePostOrder(Node * node, void (*function)(Node*));
     Node * insert(Node * root ,T value,void (*function)(Node *,Node *) = [](Node * a ,Node * b){});
     Node * insert(Node * root ,Node * node,void (*function)(Node *,Node *) = [](Node * a ,Node * b){});
-    void rotateLeft(Node * ,Node *);
-    void rotateRight(Node * ,Node *);
+    void rotateLeft(Node *& );
+    void rotateRight(Node *& );
     Node* removeNode(Node* ,T);
-    void daysAlgorithm();
+    void compress(Node* grand, int m);
+    int  BSTToVine(Node* );
 
 
 
