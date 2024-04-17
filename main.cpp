@@ -3,6 +3,10 @@
 #include "Tree.cpp"
 #include <vector>
 #include <random>
+#include "library.h"
+
+
+
 std::vector<int> getRandomVector(int size){
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -20,27 +24,64 @@ std::vector<int> getRandomVector(int size){
     }
     return randomVector;
 }
+std::vector<int> getSortedArray(int size){
+    std::vector<int> result;
+    for (int i = 0; i < size; ++i) {
+        result.push_back(i);
+    }
+    return result;
+}
 
 int main() {
-    std::vector<int> randomVector = getRandomVector(20);
-    std::vector<std::string> stringVector = {"abcd","bbcd","cccd","dcba","liberte","egalite","fraternite"};
-    Tree<std::string> tree = Tree<std::string>::createTree(stringVector);
-    auto tree1 = new Tree<int>(randomVector);
-    Tree<int> tree2(randomVector);
+    auto tree = new Tree<int>({1,2,3,4,5,6,7});
+    printf("%d\n",tree->getMaxValue());
+    printf("%d\n",tree->getMinValue());
+    tree->printInOrder();
+    tree->printPreOrder();
+    tree->display();
+    tree->removeNodesNTimes(3,3);
+    //printf("////////////////////\n");
 
-    //tree.display();
-    //tree.printInOrder();
-    //tree.insertAndPrint("z200000");
-    //tree.printInOrder();
-    //tree.display();
-    //tree1.display();
-    //tree1.display();
-    //tree1->printInOrder();
-    //tree1->display();
-    //delete tree1;
-    tree2.display();
-    tree2.test();
-    std::cout<<"/////////////////////"<<"\n";
-    tree2.display();
+    //tree->DSWAlgorithm();
+    //tree->display();
+
+    delete tree;//usuwanie metoda postorder
+
+
+    return 0;
+    std::vector<std::vector<int>> vectors;
+    std::vector<int> sizes ;
+    for(int i=1;i<=20;i++)
+        sizes.push_back(i*250);
+
+    for(auto &&it :sizes){
+        vectors.push_back(getSortedArray(it));
+    }
+
+
+
+    TimeCounter::generateDirectory("/home/wojciech/CLionProjects/algi2");
+    int size = 0;
+    TimeCounter::addFileName("Budowanie_drzewa");
+    std::string bstDegenerated = "zdegenerowane_drzewo";
+    TimeCounter::addColumnName(bstDegenerated);
+
+    std::vector<Tree<int>*>  trees;
+
+    for(auto&&it : vectors){
+        TimeCounter::addIndex(sizes[size]);
+        Tree<int>::updateCellInfo({sizes[size++],bstDegenerated});
+        trees.push_back(new Tree<int>(it));
+    }
+    size = 0;
+    TimeCounter::generateFile();
+    TimeCounter::addFileName("maksymalna_wartość");
+    for(auto&&it : trees){
+        Tree<int>::updateCellInfo({sizes[size++],bstDegenerated});
+        it->getMaxValue();
+    }
+    size = 0;
+    TimeCounter::generateFile();
+    TimeCounter::generateExcelSheet("/home/wojciech/CLionProjects/algi2/generateExcel.py");
     return 0;
 }
