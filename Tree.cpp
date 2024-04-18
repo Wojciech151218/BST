@@ -83,9 +83,14 @@ T Tree<T>::getMinValue() {
 }
 
 template<typename T>
-Tree<T> Tree<T>::createTree(std::vector<T> vector) {
-    return Tree<T>(vector);
+Tree<T> Tree<T>::createTreeFromRandom(std::vector<T> vector) {
+    auto result = Tree<T>(new Node(vector.back()));
+    vector.pop_back();
+    for(auto&&it:vector)
+        result.insert(result.root,it);
+    return  result;
 }
+
 
 
 
@@ -283,7 +288,13 @@ int Tree<T>::BSTToVine(Node* grand) {
         // pointed by tmp then 
         // right rotate it.
         if (tmp->left) {
-            rotateRight(tmp);
+            Node* oldTmp = tmp;//TODO
+            tmp = tmp->left;
+            oldTmp->left = tmp->right;
+            tmp->right = oldTmp;
+            grand->right = tmp;
+            if(oldTmp == root) root = tmp;//rightRotate
+
         }
 
             // If left dont exists
@@ -304,13 +315,20 @@ template<typename T>
 void Tree<T>::compress(Tree::Node *grand, int m) {
     // Make tmp pointer to traverse
     // and compress the given BST.
-    Node* tmp = root;
+    Node* tmp = grand->right;
 
     // Traverse and left-rotate root m times
     // to compress given vine form of BST.
     for (int i = 0; i < m; i++) {
-        rotateLeft(tmp);
+        Node* oldTmp = tmp;//TODO
+        tmp = tmp->right;
+        grand->right = tmp;
+        oldTmp->right = tmp->left;
+        tmp->left = oldTmp;
+        if(oldTmp == root) root = tmp;//leftRotate
 
+        grand = tmp;
+        tmp = tmp->right;
     }
 }
 
@@ -325,6 +343,8 @@ template<typename T>
     // get the number of nodes in input BST and
     // simultaneously convert it into right linked list.
     int count = BSTToVine(grand);
+    display();
+    printf("////////////////////\n");
     // gets the height of tree in which all levels
     // are completely filled.
     int h = log2(count + 1);
@@ -341,7 +361,6 @@ template<typename T>
     // make BST balanced.
     for (m = m / 2; m > 0; m /= 2) {
         compress(grand, m);
-
     }
 
     // return the balanced tree

@@ -29,7 +29,7 @@ public:
     };
     T getMaxValue();
     T getMinValue();
-    static Tree<T> createTree(std::vector<T>);
+    static Tree<T> createTreeFromRandom(std::vector<T>);
     void printInOrder();
     void printPreOrder();
     void display(Node *currentRoot = nullptr,int depth =0,std::string colour = "");
