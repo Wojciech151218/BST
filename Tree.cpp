@@ -165,24 +165,24 @@ typename Tree<T>::Node *Tree<T>::Node::buildBST(std::vector<int> nums, int start
 }
 
 template<typename T>
-void Tree<T>::rotateLeft(Node*& grand) {
-
-    if (not grand or not grand->right) return;
-    Node* tmp = grand->right;
-    grand->right = tmp->left;
-    tmp->left = grand;
-    if(grand == root) root = tmp;
-    grand = tmp;
+void Tree<T>::rotateLeft(Node*& tmp,Node*& grand) {
+    Node* oldTmp = tmp;
+    tmp = tmp->right;
+    grand->right = tmp;
+    oldTmp->right = tmp->left;
+    tmp->left = oldTmp;
+    if(oldTmp == root) root = tmp;
 }
 template<typename T>
-void Tree<T>::rotateRight(Node*& grand) {
+void Tree<T>::rotateRight(Node*& tmp,Node*& grand) {
 
-    if (not grand or not grand->left) return;
-    Node* tmp = grand->left;
-    grand->left = tmp->right;
-    tmp->right = grand;
-    if(grand == root) root = tmp;
-    grand = tmp;
+    if (not tmp or not tmp->left) return;
+    Node* oldTmp = tmp;
+    tmp = tmp->left;
+    oldTmp->left = tmp->right;
+    tmp->right = oldTmp;
+    grand->right = tmp;
+    if(oldTmp == root) root = tmp;//rightRotate
 }
 
 
@@ -288,12 +288,7 @@ int Tree<T>::BSTToVine(Node* grand) {
         // pointed by tmp then 
         // right rotate it.
         if (tmp->left) {
-            Node* oldTmp = tmp;//TODO
-            tmp = tmp->left;
-            oldTmp->left = tmp->right;
-            tmp->right = oldTmp;
-            grand->right = tmp;
-            if(oldTmp == root) root = tmp;//rightRotate
+            rotateRight(tmp,grand);
 
         }
 
@@ -320,13 +315,7 @@ void Tree<T>::compress(Tree::Node *grand, int m) {
     // Traverse and left-rotate root m times
     // to compress given vine form of BST.
     for (int i = 0; i < m; i++) {
-        Node* oldTmp = tmp;//TODO
-        tmp = tmp->right;
-        grand->right = tmp;
-        oldTmp->right = tmp->left;
-        tmp->left = oldTmp;
-        if(oldTmp == root) root = tmp;//leftRotate
-
+        rotateLeft(tmp,grand);
         grand = tmp;
         tmp = tmp->right;
     }

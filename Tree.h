@@ -57,8 +57,8 @@ private:
     void traversePostOrder(Node * node, void (*function)(Node*));
     Node * insert(Node * root ,T value,void (*function)(Node *,Node *) = [](Node * a ,Node * b){});
     Node * insert(Node * root ,Node * node,void (*function)(Node *,Node *) = [](Node * a ,Node * b){});
-    void rotateLeft(Node *& );
-    void rotateRight(Node *& );
+    void rotateLeft(Node *& ,Node *&);
+    void rotateRight(Node *& ,Node *&);
     Node* removeNode(Node* ,T);
     void compress(Node* grand, int m);
     int  BSTToVine(Node* );
