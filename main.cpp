@@ -4,6 +4,7 @@
 #include <vector>
 #include <random>
 #include "library.h"
+#include "AVLTree.h"
 
 
 
@@ -33,6 +34,7 @@ std::vector<int> getSortedArray(int size){
 }
 
 int main() {
+
     //auto tree1 = Tree<int>::createTreeFromRandom(getRandomVector(10));
     auto tree = new Tree<int>({1,2,3,3,3,3,4,5,6,7});
     printf("%d\n",tree->getMaxValue());
@@ -40,6 +42,7 @@ int main() {
     tree->printInOrder();
     tree->printPreOrder();
     tree->removeNodesNTimes(3,3);
+    tree->printInOrder();
 
     tree->display();
     printf("////////////////////\n");
@@ -48,9 +51,13 @@ int main() {
     tree->display();
 
     delete tree;//usuwanie metoda postorder
-
-
     return 0;
+
+
+    auto avlTree = new AVLTree({1,2,3});
+    avlTree->display();
+    avlTree->test();
+
     std::vector<std::vector<int>> vectors;
     std::vector<int> sizes ;
     for(int i=1;i<=20;i++)

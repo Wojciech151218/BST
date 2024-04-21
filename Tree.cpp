@@ -15,9 +15,9 @@ template <typename T>
 void Tree<T>::traverseInOrder( Node * node, void (*function)(Node*)){
     if (node == nullptr)
         return;
-    traverseInOrder(node->left,function);
-    function(node);
-    traverseInOrder(node->right,function);
+    traverseInOrder(node->left,function);//trawersujemy lewe pod-drzewo
+    function(node);// wywołujemy funkcję
+    traverseInOrder(node->right,function);//trawersujemy prawe pod-drzewo
 }
 template <typename T>
 void Tree<T>::traversePreOrder( Node * node, void (*function)(Node*)){
@@ -69,7 +69,7 @@ T Tree<T>::getMaxValue() {
     TimeCounter timeCounter(Tree::cellInfo);
     Node* current = root;
     while(current->right != nullptr)
-        current=current->right;
+        current=current->right;//trawersujemy do liścia najbardziej po prawo tam znajduję się największy element
     return current->value;
 }
 template<typename T>
@@ -78,7 +78,7 @@ T Tree<T>::getMinValue() {
     TimeCounter timeCounter(Tree::cellInfo);
     Node* current = root;
     while(current->left != nullptr)
-        current=current->left;
+        current=current->left;//trawersujemy do liścia najbardziej po lewo tam znajduję się najmniejszy element
     return current->value;
 }
 
@@ -203,26 +203,28 @@ Tree<T>::Tree(const Tree<T> &tree) {
 
 
 template<typename T>
-typename Tree<T>::Node * Tree<T>::removeNode(Node*  node,T key ) {
-// Base case
+typename Tree<T>::Node* Tree<T>::removeNode(Node* node, T key) {
+    // Przypadek podstawowy: jeśli węzeł jest pusty, zwracamy go.
     if (node == nullptr)
         return node;
 
-    // Recursive calls for ancestors of
-    // node to be deleted
+    // Jeśli wartość węzła jest większa niż klucz, rekursywnie
+    // przechodzimy lewe poddrzewo w poszukiwaniu węzła do usunięcia.
     if (node->value > key) {
         node->left = removeNode(node->left, key);
         return node;
     }
+        // Jeśli wartość węzła jest mniejsza niż klucz, rekursywnie
+        // przechodzimy prawe poddrzewo w poszukiwaniu węzła do usunięcia.
     else if (node->value < key) {
         node->right = removeNode(node->right, key);
         return node;
     }
 
-    // We reach here when node is the node
-    // to be deleted.
+    // Dotarliśmy tutaj, gdy węzeł jest węzłem do usunięcia.
 
-    // If one of the children is empty
+    // Jeśli jedno z dzieci węzła jest puste, usuwamy węzeł
+    // i zwracamy jego niepuste dziecko.
     if (node->left == nullptr) {
         Node* temp = node->right;
         delete node;
@@ -234,34 +236,37 @@ typename Tree<T>::Node * Tree<T>::removeNode(Node*  node,T key ) {
         return temp;
     }
 
-        // If both children exist
     else {
-
+        // W przypadku, gdy usuwany węzeł ma obu potomków, musimy znaleźć
+// następnika w drzewie, który jest węzłem o najmniejszej wartości
+// większej niż wartość usuwanego węzła. Następnie zamieniamy
+// wartość usuwanego węzła na wartość następnika, aby zachować
+// własności drzewa BST. Następnie usuwamy następnika, ponieważ
+// jego wartość została przeniesiona do miejsca usuwanego węzła.
         Node* succParent = node;
-
-        // Find successor
         Node* succ = node->right;
         while (succ->left != nullptr) {
             succParent = succ;
             succ = succ->left;
         }
-
-        // Delete successor.  Since successor
-        // is always left child of its parent
-        // we can safely make successor's right
-        // right child as left of its parent.
-        // If there is no succ, then assign
-        // succ->right to succParent->right
+// Po znalezieniu następnika, musimy zastąpić go w drzewie. Jeśli
+// rodzic następnika nie jest usuwanym węzłem, to ustawiamy lewe
+// dziecko rodzica na prawe dziecko następnika. W przeciwnym razie,
+// ustawiamy prawe dziecko rodzica na prawe dziecko następnika.
         if (succParent != node)
             succParent->left = succ->right;
         else
             succParent->right = succ->right;
 
-        // Copy Successor Data to node
+// Zamieniamy wartość usuwanego węzła na wartość następnika.
         node->value = succ->value;
 
-        // Delete Successor and return node
+// Usuwamy następnika, ponieważ jego wartość została przeniesiona
+// do miejsca usuwanego węzła.
         delete succ;
+
+// Zwracamy usuwany węzeł (który teraz ma wartość następnika),
+// aby zachować strukturę drzewa BST.
         return node;
     }
 }
@@ -269,33 +274,35 @@ typename Tree<T>::Node * Tree<T>::removeNode(Node*  node,T key ) {
 template<typename T>
 void Tree<T>::removeNodesNTimes(T key, int n) {
     int i = 0;
-    while(i++<n)
-        removeNode(root,n);
+    while(i++<n)//wywołujemy removeNode n razy
+        removeNode(root,key);
 }
 
+ // Metoda BSTToVine przekształca drzewo BST (Binary Search Tree)
+// w formę płaskiego drzewa poprzez rotacje w prawo. Zwraca liczbę
+// węzłów przekształconych w procesie.
 template<typename T>
 int Tree<T>::BSTToVine(Node* grand) {
     int count = 0;
 
-    // Make tmp pointer to traverse 
-    // and right flatten the given BST.
+    // Tworzymy wskaźnik tmp do przeglądania
+    // i prawego spłaszczenia danego drzewa BST.
     Node* tmp = grand->right;
 
-    // Traverse until tmp becomes NULL
+    // Przechodzimy, dopóki tmp nie stanie się NULLem
     while (tmp) {
 
-        // If left exist for node 
-        // pointed by tmp then 
-        // right rotate it.
+        // Jeśli lewy węzeł istnieje dla węzła
+        // wskazywanego przez tmp, to wykonujemy
+        // rotację w prawo.
         if (tmp->left) {
-            rotateRight(tmp,grand);
-
+            rotateRight(tmp, grand);
         }
 
-            // If left dont exists
-            // add 1 to count and 
-            // traverse further right to
-            // flatten remaining BST.
+            // Jeśli lewy węzeł nie istnieje
+            // dodajemy 1 do count i
+            // kontynuujemy dalsze przeglądanie w prawo,
+            // aby spłaszczyć pozostałe drzewo BST.
         else {
             count++;
             grand = tmp;
@@ -306,51 +313,54 @@ int Tree<T>::BSTToVine(Node* grand) {
     return count;
 }
 
+// Metoda compress kompresuje drzewo BST
+// przez wykonywanie m rotacji w lewo, zaczynając od węzła grand.
 template<typename T>
-void Tree<T>::compress(Tree::Node *grand, int m) {
-    // Make tmp pointer to traverse
-    // and compress the given BST.
+void Tree<T>::compress(Node* grand, int m) {
+    // Tworzymy wskaźnik tmp do przeglądania
+    // i kompresowania danego drzewa BST.
     Node* tmp = grand->right;
 
-    // Traverse and left-rotate root m times
-    // to compress given vine form of BST.
+    // Przechodzimy i wykonujemy m razy rotację w lewo,
+    // aby skompresować podane drzewo BST w postaci wstążki.
     for (int i = 0; i < m; i++) {
-        rotateLeft(tmp,grand);
-        grand = tmp;
-        tmp = tmp->right;
+        rotateLeft(tmp, grand);
+        grand = tmp;//trawersujemy w prawo
+        tmp = tmp->right;// tmp to następny prawy węzeł
     }
 }
 
+
+// Metoda DSWAlgorithm implementuje algorytm DSW (Day-Stout-Warren),
+// który przekształca drzewo BST w zrównoważone drzewo.
 template<typename T>
- void Tree<T>::DSWAlgorithm() {
-    // create dummy node with value 0
+void Tree<T>::DSWAlgorithm() {
+    // Tworzymy węzeł pomocniczy
     Node* grand = new Node(T(0));
 
-    // assign the right of dummy node as our input BST
+    // Przypisujemy prawe poddrzewo węzła dummy jako korzeń wejściowy drzewa
     grand->right = root;
 
-    // get the number of nodes in input BST and
-    // simultaneously convert it into right linked list.
+    // Pobieramy liczbę węzłów w wejściowym drzewie BST i
+    // przekształcamy je w prawą winorośl
+    // faza 1 algorytmu Daya 46 strona wykładu
     int count = BSTToVine(grand);
-    display();
-    printf("////////////////////\n");
-    // gets the height of tree in which all levels
-    // are completely filled.
+
+    // wysokość drzewa, w którym wszystkie poziomy
+    // są w pełni wypełnione.
     int h = log2(count + 1);
 
-    // get number of nodes until second last level
+    // liczba węzłów do przedostatniego poziomu.
     int m = pow(2, h) - 1;
 
-    // Left rotate for excess nodes at last level
+    // Rotacja w lewo dla nadmiarowych węzłów na ostatnim poziomie
+    // faza 2 algorytmu Daya strona 48 wykładu:
     compress(grand, count - m);
 
 
-    // Left rotation till m becomes 0
-    // Step is done as mentioned in algo to
-    // make BST balanced.
-    for (m = m / 2; m > 0; m /= 2) {
+    // Rotacja w lewo, aż m stanie się równe 0.
+    // Krok jest wykonywany zgodnie z algorytmem, aby
+    // zrównoważyć drzewo BST.
+    for (m = m / 2; m > 0; m /= 2)
         compress(grand, m);
-    }
-
-    // return the balanced tree
 }

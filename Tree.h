@@ -24,8 +24,9 @@ public:
         Node * left;
         Node * right;
         T value;
-        explicit Node(T value):value(value),left(nullptr),right(nullptr){};
+        Node(T value):value(value),left(nullptr),right(nullptr){};
         static Node* buildBST(std::vector<int> nums, int start, int end);
+        virtual ~Node(){};
     };
     T getMaxValue();
     T getMinValue();
@@ -41,14 +42,10 @@ public:
     Tree(std::vector<T>);
     void removeNodesNTimes(T key ,int n);
     void DSWAlgorithm();
-    void test(){
-        rotateRight(root->left->left);
+    void test();
 
 
-    }
-
-
-private:
+protected:
     Node * root;
     static inline TimeCounter::CellInfo cellInfo;
     int getHeight(Node * node);
